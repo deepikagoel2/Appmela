@@ -5,6 +5,7 @@ import sqlite3
 import streamlit as st
 # import pandas as pd
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode, JsCode
+import toml
 
 # @st.cache
 
@@ -25,8 +26,15 @@ def app():
 
 
         try:
+                toml_data = toml.load("secrets.toml")
+                # saving each credential into a variable
+                HOST_NAME = toml_data['mysql']['host']
+                DATABASE = toml_data['mysql']['database']
+                PASSWORD = toml_data['mysql']['password']
+                USER = toml_data['mysql']['user']
+                PORT = toml_data['mysql']['port']
                 def init_connection():
-                    return mysql.connector.connect(**st.secrets["mysql"])
+                    return mysql.connector.connect(host=HOST_NAME, database=DATABASE, user=USER, passwd=PASSWORD, use_pure=True)
 
                 connection = init_connection()
                 # connection = mysql.connector.connect(host='localhost',
