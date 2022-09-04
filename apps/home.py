@@ -5,39 +5,32 @@ import sqlite3
 import streamlit as st
 # import pandas as pd
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode, JsCode
-
 def app():
 # @st.cache
    
     st.title("AppMela Dashboard")
-
-
     cols = st.columns([.333, .333, .333])
-
     option2 = st.selectbox(
         'How many rows you would like to display',
         ('10', '50', '100'))
-
-
     placeholder = st.empty()    
-
     try:
-        # conn = mysql.connector.connect(host='localhost',
+        # connection = mysql.connector.connect(host='localhost',
         #                                     database='appmela',
         #                                     user='root',
         #                                     password='india@123')
+        
         def init_connection():
             return mysql.connector.connect(**st.secrets["mysql"])
-
-        conn = init_connection()
-        if conn.is_connected():
-            db_Info = conn.get_server_info()
-            
-            def run_query(query):
-                with conn.cursor(buffered = True) as cur:
-                    cur.execute(query)
-                    return cur.fetchall()
-            rows = run_query('''select 
+        connection = init_connection()
+        if connection.is_connected():
+            db_Info = connection.get_server_info()
+            # print("Connected to MySQL Server version ", db_Info)
+            cursor = connection.cursor(buffered = True)
+            # sql = "select appmela.candidate.name, appmela.candidate.email, appmela.candidate.gender, from appmela.candidate,
+            #         join
+            #         "
+            for record in cursor.execute('''select 
                         count(student_registration.id), count(establishment.id),
                         state.stateName, districts.Districts_name
                         from appmela.student_registration
@@ -45,8 +38,7 @@ def app():
                         inner join state on state.stateName = student_registration.state
                         inner join districts on districts.Districts_name = student_registration.district
                         group by districts.Districts_name;'''
-                            ,multi = True)   
-            for record in rows:
+                            ,multi = True):
                 if record.with_rows: 
                     record = cursor.fetchall()
                     df = pd.DataFrame(record, columns =['tot_stud', 'tot_est', 'state', 'district'
@@ -65,7 +57,6 @@ def app():
         # gb.configure_side_bar() #Add a sidebar
         gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren="Group checkbox select children") #Enable multi-row selection
         gridOptions = gb.build()
-
         # print("You're connected to database: ", record)
         states = list(df['state'].unique())
         state = st.sidebar.multiselect("State",options = states, key = 1)
@@ -167,8 +158,6 @@ def app():
         # tot_cord = int(df['tot_cord'].sum())
         # tot_vcn = int(df['vacancy'].sum)
             
-
-
         with cols[0]:
         
             wch_colour_box = (0,204,102)
@@ -179,7 +168,6 @@ def app():
             sline = "Total Students"
             # lnk = '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.1/css/all.css" crossorigin="anonymous">'
             i = f"{tot_stud}"
-
             htmlstr = f"""<p style='background-color: rgb({wch_colour_box[0]}, 
                                                     {wch_colour_box[1]}, 
                                                     {wch_colour_box[2]}, 0.75); 
@@ -195,7 +183,6 @@ def app():
                                 <i class='{iconname} fa-xs'></i> {i}
                                 </style><BR><span style='font-size: 14px; 
                                 margin-top: 0;'>{sline}</style></span></p>"""
-
             st.markdown(htmlstr, unsafe_allow_html=True)
                 
         with cols[1]:
@@ -208,7 +195,6 @@ def app():
             sline = "Total Establishments"
             # lnk = '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.1/css/all.css" crossorigin="anonymous">'
             i = f"{est}"
-
             htmlstr = f"""<p style='background-color: rgb({wch_colour_box[0]}, 
                                                     {wch_colour_box[1]}, 
                                                     {wch_colour_box[2]}, 0.75); 
@@ -224,7 +210,6 @@ def app():
                                 <i class='{iconname} fa-xs'></i> {i}
                                 </style><BR><span style='font-size: 14px; 
                                 margin-top: 0;'>{sline}</style></span></p>"""
-
             st.markdown(htmlstr, unsafe_allow_html=True)
             
             
@@ -238,7 +223,6 @@ def app():
         #     sline = "Total Coordinators"
         #     # lnk = '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.1/css/all.css" crossorigin="anonymous">'
         #     i = f"{tot_cord}"
-
         #     htmlstr = f"""<p style='background-color: rgb({wch_colour_box[0]}, 
         #                                               {wch_colour_box[1]}, 
         #                                               {wch_colour_box[2]}, 0.75); 
@@ -254,15 +238,12 @@ def app():
         #                         <i class='{iconname} fa-xs'></i> {i}
         #                         </style><BR><span style='font-size: 14px; 
         #                         margin-top: 0;'>{sline}</style></span></p>"""
-
         #     st.markdown(htmlstr, unsafe_allow_html=True)
                 
         
         def convert_df(df):
             return df.to_csv().encode('utf-8')
-
         csv = convert_df(df)
-
         st.download_button(
             "Press to Download",
             csv,
@@ -272,10 +253,10 @@ def app():
         )
     except Error as e:
             print("Error while connecting to MySQL", e)
-    finally:
-            if conn.is_connected():
+    # finally:
+    #     if connection.is_connected():
+
+    #     cursor.close()
+    #     connection.close()
                 
-                cursor.close()
-                conn.close()
-            # print("MySQL conn is closed")
-            
+            # print("MySQL connection is closed")
