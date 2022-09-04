@@ -278,7 +278,7 @@ def app():
     finally:
             if connection.is_connected():
                 
-            cursor.close()
-            connection.close()
+                cursor.close()
+                connection.close()
             # print("MySQL connection is closed")
             
