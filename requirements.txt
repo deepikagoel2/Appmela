@@ -48,6 +48,7 @@ streamlit-awesome-table==0.1.0
 streamlit-card==0.0.3
 streamlit-card-select==0.3.0
 streamlit-metrics==0.1.0
+toml==0.10.2
 urllib3==1.26.11
 watchdog==2.1.9
 xlrd==2.0.1
