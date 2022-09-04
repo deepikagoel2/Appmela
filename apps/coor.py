@@ -25,10 +25,14 @@ def app():
 
 
         try:
-                connection = mysql.connector.connect(host='localhost',
-                                                        database='appmela',
-                                                        user='root',
-                                                        password='india@123')
+                def init_connection():
+                    return mysql.connector.connect(**st.secrets["mysql"])
+
+                connection = init_connection()
+                # connection = mysql.connector.connect(host='localhost',
+                #                                         database='appmela',
+                #                                         user='root',
+                #                                         password='india@123')
                 if connection.is_connected():
                         db_Info = connection.get_server_info()
                         print("Connected to MySQL Server version ", db_Info)
