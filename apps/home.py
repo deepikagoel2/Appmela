@@ -21,27 +21,23 @@ def app():
 
     placeholder = st.empty()    
 
-
-
-
     try:
-        # connection = mysql.connector.connect(host='localhost',
+        # conn = mysql.connector.connect(host='localhost',
         #                                     database='appmela',
         #                                     user='root',
         #                                     password='india@123')
         def init_connection():
             return mysql.connector.connect(**st.secrets["mysql"])
 
-        connection = init_connection()
-        if connection.is_connected():
-            db_Info = connection.get_server_info()
-            # print("Connected to MySQL Server version ", db_Info)
-            cursor = connection.cursor(buffered = True)
-            # sql = "select appmela.candidate.name, appmela.candidate.email, appmela.candidate.gender, from appmela.candidate,
-
-            #         join
-            #         "
-            for record in cursor.execute('''select 
+        conn = init_connection()
+        if conn.is_connected():
+            db_Info = conn.get_server_info()
+            
+            def run_query(query):
+                with conn.cursor(buffered = True) as cur:
+                    cur.execute(query)
+                    return cur.fetchall()
+            rows = run_query('''select 
                         count(student_registration.id), count(establishment.id),
                         state.stateName, districts.Districts_name
                         from appmela.student_registration
@@ -49,7 +45,8 @@ def app():
                         inner join state on state.stateName = student_registration.state
                         inner join districts on districts.Districts_name = student_registration.district
                         group by districts.Districts_name;'''
-                            ,multi = True):
+                            ,multi = True)   
+            for record in rows:
                 if record.with_rows: 
                     record = cursor.fetchall()
                     df = pd.DataFrame(record, columns =['tot_stud', 'tot_est', 'state', 'district'
@@ -276,9 +273,9 @@ def app():
     except Error as e:
             print("Error while connecting to MySQL", e)
     finally:
-            if connection.is_connected():
+            if conn.is_connected():
                 
                 cursor.close()
-                connection.close()
-            # print("MySQL connection is closed")
+                conn.close()
+            # print("MySQL conn is closed")
             
