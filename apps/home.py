@@ -21,16 +21,8 @@ def app():
         #                                     user='root',
         #                                     password='india@123')
         
-        toml_data = toml.load("secrets.toml")
-        # saving each credential into a variable
-        HOST_NAME = toml_data['mysql']['host']
-        DATABASE = toml_data['mysql']['database']
-        PASSWORD = toml_data['mysql']['password']
-        USER = toml_data['mysql']['user']
-        PORT = toml_data['mysql']['port']
-        
         def init_connection():
-            return mysql.connector.connect(host=HOST_NAME, database=DATABASE, user=USER, passwd=PASSWORD, use_pure=True)
+            return mysql.connector.connect(**st.secrets["mysql"])
         connection = init_connection()
         if connection.is_connected():
             db_Info = connection.get_server_info()
