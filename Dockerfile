@@ -15,7 +15,7 @@ RUN pip install -r requirements.txt
 
 ENTRYPOINT ["streamlit", "run"]
 
-CMD ["home.py"]
+CMD ["home.py --server.port=80"]
 
 # WORKDIR .
 
