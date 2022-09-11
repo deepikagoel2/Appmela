@@ -1,44 +1,19 @@
-FROM python:3.10
+# app/Dockerfile
 
-# Expose port you want your app on
+FROM python:3.10-slim
+
 EXPOSE 8501
 
-RUN pip3 install streamlit
+WORKDIR /app
 
-COPY home.py home.py
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    software-properties-common \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
+RUN git clone https://github.com/deepikagoel1/Appmela.git .
 
-# Upgrade pip and install requirements
-COPY requirements.txt ./requirements.txt
-# RUN pip install -U pip
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
-ENTRYPOINT ["streamlit", "run"]
-
-CMD ["--server.port=80 --server.enableCORS=false --server.enableWebsocketCompression=false --server.enableXsrfProtection=false home.py --&>/dev/null&"]
-
-# WORKDIR .
-
-# ENV ChocolateyUseWindowsCompression false 
-# RUN powershell Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force
-# RUN powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
-# RUN choco install git.install -y --no-progress
-
-# RUN choco install vscode -y --no-progress
-
-
-
-# # Upgrade pip and install requirements
-# COPY requirements.txt ./requirements.txt
-# # RUN pip install -U pip
-# RUN pip install -r requirements.txt
-
-# # Copy app code and set working directory
-# # COPY text_explorer text_explorer 
-# COPY app4.py app4.py
-# # COPY references references
-
-# # Run
-# ENTRYPOINT ["streamlit", "run"]
-
-# CMD ["app4.py"]
+ENTRYPOINT ["streamlit", "run", "home.py", "--server.port=8501", "--server.address=0.0.0.0"]
