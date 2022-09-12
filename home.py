@@ -15,14 +15,14 @@ option2 = st.selectbox(
 ('10', '50', '100'))
 placeholder = st.empty()    
 try:
-    # connection = mysql.connector.connect(host='localhost',
-    #                                     database='appmela',
-    #                                     user='root',
-    #                                     password='india@123')
+    connection = mysql.connector.connect(host='localhost',
+                                        database='appmela',
+                                        user='root',
+                                        password='india@123')
 
-    def init_connection():
-        return mysql.connector.connect(**st.secrets["mysql"])
-    connection = init_connection()
+#     def init_connection():
+#         return mysql.connector.connect(**st.secrets["mysql"])
+#     connection = init_connection()
     
     if connection.is_connected():
         db_Info = connection.get_server_info()
