@@ -23,6 +23,7 @@ try:
     def init_connection():
         return mysql.connector.connect(**st.secrets["mysql"])
     connection = init_connection()
+    @st.experimental_memo(ttl=600)
     if connection.is_connected():
         db_Info = connection.get_server_info()
         # print("Connected to MySQL Server version ", db_Info)
